@@ -27,44 +27,12 @@ app.get("/api/notes", (req, res) => {
 
 // POST request for notes when a new note is made in /notes
 app.post("/api/notes", (req, res) => {
-    const { title, text} = req.body;
 
-    if( title && text ){
-        const newNote = {
-            id: uuid(),
-            title,
-            text,
-        }
-
-        fs.readFile("./db/db.json", (err, data) => {
-            if(err) {
-                console.error(err);
-            } else{
-                const parsedNotes = JSON.parse(data)
-   
-                parsedNotes.push(newNote);
-
-                // Add a new Note
-                fs.writeFile(
-                    "./db/db.json",
-                    JSON.stringify( parsedNotes, null, 4),
-                    (writeErr) =>
-                    writeErr ? console.error(writeErr)
-                    : console.info('Successfully updated reviews!')      
-                )
-            }
-        });
-
-        const response = {
-            status: "success", 
-            body: newNote,
-        }
-
-        console.log(response);
-        res.json(response);
-    } else {
-        res.json("Error in posting note")
-    }
+    req.body.id = uuid();
+    const newNote = req.body;
+    db.push(newNote);
+    fs.writeFileSync("./db/db.json", JSON.stringify(db));
+    res.json(db);
 });
 
 // DELETE request for a certain ID
@@ -72,10 +40,10 @@ app.delete("/api/notes/:id", (req, res) => {
     // Gets the ID from req
     const id = req.params.id;
 
-    notesdb = db.filter(notes => notes.id != id);
+    db = db.filter(notes => notes.id != id);
 
-    fs.writeFileSync("./db/db.json", JSON.stringify(notesdb));
-    res.json(notesdb);
+    fs.writeFileSync("./db/db.json", JSON.stringify(db));
+    res.json(db);
 })
 
 
