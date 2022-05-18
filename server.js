@@ -27,14 +27,6 @@ app.get("/api/notes", (req, res) => {
 
 // POST request for notes when a new note is made in /notes
 app.post("/api/notes", (req, res) => {
-    // Displays the POST data in console
-    // console.log(req.body)
-    // console.log("TITLE: ", req.body.title)
-    // console.log("TEXT: ", req.body.text)
-
-    // TO DO: 
-    // - From the req.body, post it in the db
-    // - Add an ID to it as well
     const { title, text} = req.body;
 
     if( title && text ){
@@ -73,16 +65,17 @@ app.post("/api/notes", (req, res) => {
     } else {
         res.json("Error in posting note")
     }
-
-
-    // let notesdb = req.json() 
-    // console.info(`Receiving... ${notesdb}`) 
 });
 
 // DELETE request for a certain ID
 app.delete("/api/notes/:id", (req, res) => {
     // Gets the ID from req
-    console.log("BODY: ", req.body)
+    const id = req.params.id;
+
+    notesdb = db.filter(notes => notes.id != id);
+
+    fs.writeFileSync("./db/db.json", JSON.stringify(notesdb));
+    res.json(notesdb);
 })
 
 
